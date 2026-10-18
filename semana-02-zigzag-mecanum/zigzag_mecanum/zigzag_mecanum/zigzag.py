@@ -31,8 +31,7 @@ class ZigzagNode(Node):
 
         msg.linear.y = 0.2 * self.direction
 
-        # Mantiene el chasis apuntando al frente
-        msg.angular.z = 0.0
+        msg.angular.z = 0.3 * self.direction
 
         self.publisher_.publish(msg)
         self.step_count += 1
