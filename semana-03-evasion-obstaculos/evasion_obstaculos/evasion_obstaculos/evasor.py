@@ -111,9 +111,9 @@ class Evasor(Node):
 
     def hay_obstaculo(self) -> bool:
         """
-        TODO: devolver True si hay algo más cerca que distancia_choque_m
+        Devolver True si hay algo más cerca que distancia_choque_m
         dentro del cono frontal (angulo_frente_deg +/- angulo_vision_deg/2).
-
+        
         Pasos sugeridos (con numpy, self.ultimo_scan es un LaserScan):
           1. Si no llegó ningún scan, es decir es None, devolver False
           2. Armar un array con el ángulo de cada medición
@@ -133,7 +133,33 @@ class Evasor(Node):
              calibrados como pensás, antes de que el error se note como un
              giro raro del robot.
         """
-        pass
+        # 1. Sin scan todavía no hay nada que evaluar
+        if self.ultimo_scan is None:
+            return False
+
+        scan = self.ultimo_scan
+        rangos = np.array(scan.ranges)
+
+        # 2. Ángulo de cada medición
+        angulos = scan.angle_min + np.arange(len(rangos)) * scan.angle_increment
+
+        # 3. Ángulo relativo al centro del cono, normalizado a [-pi, pi]
+        centro = math.radians(self.angulo_frente_deg)
+        relativos = np.arctan2(np.sin(angulos - centro), np.cos(angulos - centro))
+
+        # 4. Máscaras: dentro del cono y más cerca que la distancia de choque.
+        # inf y nan dan False en la comparación, así que se descartan solos.
+        medio_cono = math.radians(self.angulo_vision_deg) / 2.0
+        dentro_cono = np.abs(relativos) <= medio_cono
+        mas_cerca = rangos < self.distancia_choque_m
+
+        # 5. Combinar
+        mascara = dentro_cono & mas_cerca
+
+        # 6. Publicar para ver en RViz qué rayos disparan la decisión
+        self.publicar_scan_filtrado(mascara)
+
+        return bool(np.any(mascara))
 
     def iniciar_giro(self):
         """Guarda el yaw actual como referencia para saber, más adelante,
@@ -146,22 +172,22 @@ class Evasor(Node):
         return abs(self.normalizar_angulo(self.yaw_actual - self.yaw_inicial_giro))
 
     def avanzar(self) -> Twist:
-        """TODO: devolver un Twist que mueva el robot derecho hacia
+        """Devolver un Twist que mueva el robot derecho hacia
         adelante, a velocidad_adelante (m/s)."""
         msg = Twist()
-        # TODO: completar el campo de avance
+        msg.linear.x = self.velocidad_adelante
         return msg
 
     def girar(self) -> Twist:
-        """TODO: igual que avanzar(), pero para girar en el lugar,
+        """Igual que avanzar(), pero para girar en el lugar,
         a velocidad_angular (rad/s)."""
         msg = Twist()
-        # TODO: completar el campo de giro
+        msg.angular.z = self.velocidad_angular
         return msg
 
     def maquina_de_estados(self):
         """
-        TODO: esta función es el timer callback, corre a FRECUENCIA_HZ. Es
+        Esta función es el timer callback, corre a FRECUENCIA_HZ. Es
         la máquina de estados completa: primero decide si hay que cambiar
         de estado (transición), después actúa según el estado ya
         actualizado, y publica.
@@ -182,9 +208,15 @@ class Evasor(Node):
         # Transición de estados
 
         if self.estado == ESTADO_AVANZAR:
-            pass
-        if self.estado == ESTADO_GIRAR:
-            pass
+            # Sin odometría no se puede medir el giro, así que no se arranca
+            if self.hay_obstaculo() and self.yaw_actual is not None:
+                self.iniciar_giro()
+                self.estado = ESTADO_GIRAR
+                self.get_logger().info('AVANZAR -> GIRAR: obstáculo al frente')
+        elif self.estado == ESTADO_GIRAR:
+            if self.angulo_girado() >= math.radians(self.angulo_giro_deg):
+                self.estado = ESTADO_AVANZAR
+                self.get_logger().info('GIRAR -> AVANZAR: giro completado')
 
         
         # Acción según el estado
