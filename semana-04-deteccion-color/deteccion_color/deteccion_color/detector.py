@@ -86,7 +86,15 @@ class DetectorColor(Node):
           4. Combinar las dos máscaras con cv2.bitwise_or (un pixel es
              rojo si cae en cualquiera de los dos rangos).
         """
-        pass
+        bajo1 = np.array([self.hue_rojo_bajo_1, self.saturacion_min, self.valor_min])
+        alto1 = np.array([self.hue_rojo_alto_1, 255, 255])
+        bajo2 = np.array([self.hue_rojo_bajo_2, self.saturacion_min, self.valor_min])
+        alto2 = np.array([self.hue_rojo_alto_2, 255, 255])
+
+        mascara1 = cv2.inRange(imagen_hsv, bajo1, alto1)
+        mascara2 = cv2.inRange(imagen_hsv, bajo2, alto2)
+
+        return cv2.bitwise_or(mascara1, mascara2)
 
     def hay_cuadrado_rojo(self) -> bool:
         """
@@ -102,7 +110,14 @@ class DetectorColor(Node):
           4. Medir self.area_mayor_contorno(...) de esa máscara.
           5. Devolver True si esa área es mayor a self.area_minima_px.
         """
-        pass
+        if self.ultima_imagen is None:
+            return False
+
+        imagen_hsv = cv2.cvtColor(self.ultima_imagen, cv2.COLOR_BGR2HSV)
+        mascara = self.mascara_rojo(imagen_hsv)
+        area = self.area_mayor_contorno(mascara)
+
+        return area > self.area_minima_px
 
     def procesar_imagen(self):
         """
@@ -121,7 +136,15 @@ class DetectorColor(Node):
              ilegible. Guardá el último valor en self.ultimo_valor_publicado
              para poder compararlo la próxima vez.
         """
-        pass
+        if self.hay_cuadrado_rojo() and self.ultimo_valor_publicado is not True:
+            msg = Bool()
+            msg.data = True
+            self.publisher_.publish(msg)
+            self.get_logger().info('Cuadrado rojo detectado')
+            self.ultimo_valor_publicado = True
+        elif not self.hay_cuadrado_rojo() and self.ultimo_valor_publicado is not False:
+            self.get_logger().info('No hay cuadrado rojo')
+            self.ultimo_valor_publicado = False
 
 
 def main(args=None):

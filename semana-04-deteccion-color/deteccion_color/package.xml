@@ -18,7 +18,12 @@
     usa tf2 para ubicar la cámara respecto del lidar. Primero completá para detector.py,
     y luego agregá lo que haga falta para detector_scan.py.
   -->
-
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>python3-opencv</depend>
+  <depend>python3-numpy</depend>
+  <depend>tf2_ros</depend>
+  <depend>ament_cmake</depend>
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>
