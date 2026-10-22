@@ -38,6 +38,9 @@
   <exec_depend>rviz2</exec_depend>
   <exec_depend>evasion_obstaculos</exec_depend>
   <exec_depend>deteccion_color</exec_depend>
+  <exec_depend>localizacion</exec_depend>
+  <exec_depend>nav2_map_server</exec_depend>
+  <exec_depend>nav2_lifecycle_manager</exec_depend>
   <exec_depend>yahboom_rosmaster_bringup</exec_depend>
   <exec_depend>yahboom_rosmaster_gazebo</exec_depend>
 

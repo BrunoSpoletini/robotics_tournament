@@ -80,7 +80,20 @@ class CampoVerosimilitud(Node):
              obstáculos mismos (distancia 0) y decae a medida que te alejás.
           5. Escalar a 0-100 (multiplicar por 100) y devolver.
         """
-        pass
+        # 1. Celdas que son obstáculo.
+        mascara = grid >= UMBRAL_OCUPADO
+
+        # 2. Distancia (en píxeles) de cada celda al obstáculo más cercano.
+        distancia_px = ndimage.distance_transform_edt(~mascara)
+
+        # 3. Píxeles -> metros.
+        distancia_m = distancia_px * resolucion
+
+        # 4. Gaussiana centrada en 0: 1.0 sobre la pared, decae al alejarse.
+        probabilidad = np.exp(-distancia_m ** 2 / (2 * self.sigma_sensor ** 2))
+
+        # 5. Escalar a 0-100.
+        return probabilidad * 100
 
 
 def main(args=None):
