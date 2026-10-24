@@ -61,7 +61,16 @@ def agrupar_en_rachas(booleanos: np.ndarray):
          la última de la lista).
       5. Devolver la lista de rachas resultante.
     """
-    pass
+    indices = np.flatnonzero(booleanos)
+    if len(indices) == 0:
+        return []
+    diferencias = np.diff(indices)
+    cortes = np.flatnonzero(diferencias > 1) + 1
+    rachas = np.split(indices, cortes)
+    if len(rachas) > 1 and rachas[0][0] == 0 and rachas[-1][-1] == len(booleanos) - 1:
+        rachas[0] = np.concatenate([rachas[-1], rachas[0]])
+        rachas = rachas[:-1]
+    return [r.tolist() for r in rachas]
 
 
 class DetectorObstaculos(Node):
@@ -191,7 +200,49 @@ class DetectorObstaculos(Node):
           11. Llamar a `self.publicar_scan_filtrado(msg, rangos, no_mapeado)`
               y `self.publicar_objetos(no_mapeado, xs_map, ys_map)`.
         """
-        pass
+        if self.campo is None:
+            return
+        transform = self.obtener_transform_a_map(msg.header.frame_id)
+        if transform is None:
+            return
+
+        rangos = np.array(msg.ranges, dtype=np.float64)
+        n = len(rangos)
+        angulos = msg.angle_min + np.arange(n) * msg.angle_increment
+
+        minimo = max(msg.range_min, self.distancia_minima_valida)
+        validos = np.isfinite(rangos) & (rangos >= minimo) & (rangos <= msg.range_max)
+
+        xs_laser = rangos * np.cos(angulos)
+        ys_laser = rangos * np.sin(angulos)
+
+        tx = transform.transform.translation.x
+        ty = transform.transform.translation.y
+        yaw = yaw_de_quaternion(transform.transform.rotation)
+        c, s = math.cos(yaw), math.sin(yaw)
+        xs_map = tx + c * xs_laser - s * ys_laser
+        ys_map = ty + s * xs_laser + c * ys_laser
+
+        resolucion = self.info_mapa.resolution
+        origen_x = self.info_mapa.origin.position.x
+        origen_y = self.info_mapa.origin.position.y
+        # Los rangos inf dan coordenadas inf/nan; los reemplazo antes de
+        # castear a entero (igual quedan descartados por `validos`).
+        col = np.floor(np.nan_to_num((xs_map - origen_x) / resolucion,
+                                     nan=-1, posinf=-1, neginf=-1)).astype(np.int32)
+        fila = np.floor(np.nan_to_num((ys_map - origen_y) / resolucion,
+                                      nan=-1, posinf=-1, neginf=-1)).astype(np.int32)
+
+        alto, ancho = self.campo.shape
+        dentro_grilla = (col >= 0) & (col < ancho) & (fila >= 0) & (fila < alto)
+
+        probabilidad = np.zeros(n)
+        probabilidad[dentro_grilla] = self.campo[fila[dentro_grilla], col[dentro_grilla]]
+
+        no_mapeado = validos & dentro_grilla & (probabilidad < self.umbral_probabilidad)
+
+        self.publicar_scan_filtrado(msg, rangos, no_mapeado)
+        self.publicar_objetos(no_mapeado, xs_map, ys_map)
 
     # ---------- publishers ----------
 
