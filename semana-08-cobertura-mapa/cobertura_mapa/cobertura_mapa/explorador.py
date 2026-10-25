@@ -256,7 +256,12 @@ class Explorador(Node):
              de la candidata más cercana.
           5. Devolvé `(int(filas[i]), int(cols[i]))` con ese índice.
         """
-        pass
+        filas, cols = np.where(self.no_cubiertas)
+        if len(filas) == 0:
+            return None
+        dist2 = (filas - fila_r) ** 2 + (cols - col_r) ** 2
+        i = np.argmin(dist2)
+        return int(filas[i]), int(cols[i])
 
     def vector_hacia(self, x_r, y_r, yaw_r, punto_mundo):
         """
@@ -295,7 +300,17 @@ class Explorador(Node):
                `vy = -s * dir_x_mundo + c * dir_y_mundo`
           6. Devolvé `(vx, vy, dist)`.
         """
-        pass
+        gx, gy = punto_mundo
+        dx, dy = gx - x_r, gy - y_r
+        dist = math.hypot(dx, dy)
+        if dist < 1e-3:
+            return 0.0, 0.0, dist
+        escala = min(dist, 1.0) * self.ganancia_atractiva
+        dir_x_mundo, dir_y_mundo = (dx / dist) * escala, (dy / dist) * escala
+        c, s = math.cos(yaw_r), math.sin(yaw_r)
+        vx = c * dir_x_mundo + s * dir_y_mundo
+        vy = -s * dir_x_mundo + c * dir_y_mundo
+        return vx, vy, dist
 
     def vector_repulsivo(self):
         """Capa de seguridad secundaria: empuja lejos de cualquier punto
@@ -451,7 +466,17 @@ class Explorador(Node):
         """
         anterior = self.estado
 
-        # TODO: completar los 2 `if`/`elif` (ver docstring de arriba)
+        if self.estado == ESTADO_INICIALIZANDO:
+            if (pose is not None
+                    and self.no_cubiertas is not None
+                    and self.libre_fino is not None
+                    and self.pose_inicial_confirmada):
+                transcurrido = (self.get_clock().now() - self.momento_confirmacion).nanoseconds / 1e9
+                if transcurrido >= self.tiempo_asentamiento_s:
+                    self.estado = ESTADO_EXPLORANDO
+        elif self.estado == ESTADO_EXPLORANDO:
+            if self.no_cubiertas is not None and not np.any(self.no_cubiertas):
+                self.estado = ESTADO_TERMINADO
 
         if self.estado != anterior:
             self.get_logger().info(f'Transición: {anterior} -> {self.estado}')

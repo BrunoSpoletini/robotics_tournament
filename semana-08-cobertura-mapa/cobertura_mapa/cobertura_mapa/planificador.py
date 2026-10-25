@@ -89,6 +89,25 @@ def a_estrella(libre, inicio, objetivo, grilla_costo=None):
 
         fila_a, col_a = actual
         for df, dc, costo in _VECINOS:
-            pass  # TODO: completar (ver docstring de a_estrella)
+            fila_v, col_v = fila_a + df, col_a + dc
+            if not (0 <= fila_v < alto and 0 <= col_v < ancho):
+                continue
+            if not libre[fila_v, col_v]:
+                continue
+            if df != 0 and dc != 0:
+                if not (libre[fila_a + df, col_a] and libre[fila_a, col_a + dc]):
+                    continue
+            vecino = (fila_v, col_v)
+
+            costo_arista = costo
+            if grilla_costo is not None:
+                costo_arista *= 1.0 + 0.5 * (grilla_costo[fila_a, col_a]
+                                             + grilla_costo[fila_v, col_v])
+            nuevo_g = g + costo_arista
+
+            if nuevo_g < costo_g.get(vecino, math.inf):
+                costo_g[vecino] = nuevo_g
+                vino_de[vecino] = actual
+                heapq.heappush(abiertos, (nuevo_g + heuristica(vecino), nuevo_g, vecino))
 
     return None
