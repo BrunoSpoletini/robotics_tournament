@@ -10,7 +10,8 @@ from rclpy.time import Time
 
 from nav_msgs.msg import OccupancyGrid, Odometry, Path
 from sensor_msgs.msg import LaserScan
-from geometry_msgs.msg import Pose, PoseArray, PoseStamped, Quaternion, TransformStamped
+from geometry_msgs.msg import (Pose, PoseArray, PoseStamped, PoseWithCovarianceStamped,
+                               Quaternion, TransformStamped)
 
 from tf2_ros import TransformBroadcaster, Buffer, TransformListener
 
@@ -127,6 +128,9 @@ class Localizador(Node):
                                  qos_profile_sensor_data)
         self.create_subscription(Odometry, 'odom', self.recibir_odom, 10)
         self.create_subscription(Odometry, 'ground_truth/odom', self.recibir_ground_truth, 10)
+        # "2D Pose Estimate" de RViz publica acá (semana 08).
+        self.create_subscription(
+            PoseWithCovarianceStamped, 'initialpose', self.recibir_pose_inicial, 10)
 
         self.pub_particulas = self.create_publisher(PoseArray, 'particlecloud', 10)
         self.pub_camino_odom = self.create_publisher(Path, 'camino_odom', 10)
@@ -152,6 +156,20 @@ class Localizador(Node):
     # disparada por eventos — predecir en cada /odom, corregir en cada
     # /scan — y forzar un timer aparte no lo haría más simple, solo menos
     # fiel al algoritmo real.
+
+    def recibir_pose_inicial(self, msg: PoseWithCovarianceStamped):
+        """Vuelve a sembrar la nube alrededor de la pose que marcó RViz con
+        "2D Pose Estimate" (misma cuenta que el __init__)."""
+        x = msg.pose.pose.position.x
+        y = msg.pose.pose.position.y
+        theta = self.yaw_de_quaternion(msg.pose.pose.orientation)
+        n = self.num_particulas
+        dxy = self.get_parameter('dispersion_inicial_xy').value
+        dtheta = self.get_parameter('dispersion_inicial_theta').value
+        x0 = np.random.normal(x, dxy, n)
+        y0 = np.random.normal(y, dxy, n)
+        theta0 = np.random.normal(theta, dtheta, n)
+        self.particulas = np.stack([x0, y0, theta0, np.full(n, 1.0 / n)], axis=1)
 
     def recibir_campo(self, msg: OccupancyGrid):
         if self.campo is None:

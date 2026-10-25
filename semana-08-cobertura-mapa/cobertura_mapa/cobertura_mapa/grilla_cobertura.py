@@ -222,7 +222,55 @@ class GrillaCobertura(Node):
              RViz en vivo -- si no cambió nada, no hace falta publicar de
              nuevo.
         """
-        pass
+        if self.cubierta is None or not self.pose_inicial_confirmada or self.ultimo_scan is None:
+            return
+        msg = self.ultimo_scan
+
+        pose = self.obtener_pose_robot()
+        if pose is None:
+            return
+        fila_robot, col_robot = self.celda_de(*pose)
+        if not self.dentro_de_grilla(fila_robot, col_robot):
+            return
+
+        try:
+            tf = self.tf_buffer.lookup_transform(self.map_frame, msg.header.frame_id, Time())
+        except Exception:
+            return
+
+        rangos = np.array(msg.ranges, dtype=np.float64)
+        n = len(rangos)
+        angulos = msg.angle_min + np.arange(n) * msg.angle_increment
+
+        minimo = max(msg.range_min, self.distancia_minima_valida)
+        finito = np.isfinite(rangos)
+        rebote_corto = finito & (rangos < minimo)
+        sin_retorno = ~finito | (rangos > msg.range_max)
+        alcance = np.where(sin_retorno, msg.range_max, rangos)
+
+        xs_laser = alcance * np.cos(angulos)
+        ys_laser = alcance * np.sin(angulos)
+        tx = tf.transform.translation.x
+        ty = tf.transform.translation.y
+        yaw = yaw_de_quaternion(tf.transform.rotation)
+        c, s = math.cos(yaw), math.sin(yaw)
+        xs_map = tx + c * xs_laser - s * ys_laser
+        ys_map = ty + s * xs_laser + c * ys_laser
+
+        hubo_cambios = False
+        for i in range(n):
+            if rebote_corto[i]:
+                continue
+            fila_fin, col_fin = self.celda_de(xs_map[i], ys_map[i])
+            for fila, col in trazar_rayo(fila_robot, col_robot, fila_fin, col_fin):
+                if not self.dentro_de_grilla(fila, col):
+                    break
+                if self.libre_c[fila, col] and not self.cubierta[fila, col]:
+                    self.cubierta[fila, col] = True
+                    hubo_cambios = True
+
+        if hubo_cambios:
+            self.publicar_grilla()
 
     # ---------- publisher ----------
 

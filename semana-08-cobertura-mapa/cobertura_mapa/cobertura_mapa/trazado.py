@@ -37,4 +37,24 @@ def trazar_rayo(fila_desde: int, col_desde: int, fila_hasta: int, col_hasta: int
          cuando el paso es diagonal).
       7. Devolvé la lista de celdas una vez que el bucle corta.
     """
-    pass
+    f0, c0 = int(fila_desde), int(col_desde)
+    f1, c1 = int(fila_hasta), int(col_hasta)
+    dc = abs(c1 - c0)
+    df = abs(f1 - f0)
+    sc = 1 if c0 < c1 else -1
+    sf = 1 if f0 < f1 else -1
+    error = dc - df
+    f, c = f0, c0
+    celdas = []
+    while True:
+        celdas.append((f, c))
+        if f == f1 and c == c1:
+            break
+        e2 = 2 * error
+        if e2 > -df:
+            error -= df
+            c += sc
+        if e2 < dc:
+            error += dc
+            f += sf
+    return celdas
