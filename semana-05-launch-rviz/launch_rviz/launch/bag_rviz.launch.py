@@ -19,7 +19,9 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import (LaunchConfiguration, PathJoinSubstitution)
+from launch_ros.substitutions import FindPackageShare
+
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
@@ -30,19 +32,20 @@ def generate_launch_description():
 
     config_rviz = os.path.join(pkg_launch_rviz, 'rviz', 'realrobot.rviz')
 
-    launch_mapa = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(pkg_launch_rviz, 'launch', 'mapa_laberinto.launch.py')
-        ),
-        launch_arguments={'use_sim_time': 'true'}.items(),
-    )
+    # # TODO - SACAR CUANDO TERMINEMOS DE TESTEAR
+    # launch_mapa = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource(
+    #         PathJoinSubstitution([FindPackageShare('mapa_laberinto'), 'launch', 'mapa.launch.py'])
+    #     ),
+    #     launch_arguments={'use_sim_time': 'true'}.items(),
+    # )
 
     tf2_ros = Node(
         package='tf2_ros',
         executable='static_transform_publisher',
         name='static_transform_publisher',
         output='screen',
-        arguments=['0', '0', '0', '0', '0', '0', 'map', 'odom'],
+        arguments=['--frame-id', 'map', '--child-frame-id', 'odom'],
         parameters=[
             {'use_sim_time': True}
         ],
@@ -68,6 +71,28 @@ def generate_launch_description():
         ],
     )
 
+    medir_odometria = Node(
+        package='evaluador_victimas',
+        executable='medir_odometria',
+        name='medir_odometria',
+        output='screen',
+        parameters=[
+            {'use_sim_time': True}
+        ],
+    )
+
+    parametros_odom = [{'escala_avance': 0.8,
+        'escala_giro': -0.8,
+        'use_sim_time': True}]
+
+    corregir_odom = Node(
+        package='evaluador_victimas',
+        executable='odom_corregida',
+        name='odom_corregida',
+        output='screen',
+        parameters=parametros_odom
+    )
+
     rviz = Node(
         package='rviz2',
         executable='rviz2',
@@ -78,9 +103,10 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        launch_mapa,
         tf2_ros,
         detector,
         detector_scan,
+        medir_odometria,
+        corregir_odom,
         rviz,
     ])

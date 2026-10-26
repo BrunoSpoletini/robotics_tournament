@@ -1,0 +1,97 @@
+[medir_odometria-4] [INFO] [1793050281.498485361] [medir_odometria]: bag   2.1 s | giro odom  0.0°  IMU     0.2°  IMU/odom    nan | avance odom 0.000 m  lidar atrás 1.352 m
+[medir_odometria-4] [INFO] [1793050283.448741097] [medir_odometria]: bag   4.1 s | giro odom  0.0°  IMU     0.2°  IMU/odom    nan | avance odom 0.000 m  lidar atrás 1.354 m
+[medir_odometria-4] [INFO] [1793050285.549901073] [medir_odometria]: bag   6.2 s | giro odom  0.0°  IMU     0.4°  IMU/odom    nan | avance odom 0.000 m  lidar atrás 1.352 m
+[medir_odometria-4] [INFO] [1793050287.649440087] [medir_odometria]: bag   8.3 s | giro odom  0.0°  IMU     0.2°  IMU/odom    nan | avance odom 0.000 m  lidar atrás 1.352 m
+[medir_odometria-4] [INFO] [1793050289.748782281] [medir_odometria]: bag  10.4 s | giro odom  0.0°  IMU    -0.0°  IMU/odom    nan | avance odom 0.000 m  lidar atrás 1.352 m
+[medir_odometria-4] [INFO] [1793050291.749181106] [medir_odometria]: bag  12.4 s | giro odom  0.0°  IMU    -0.4°  IMU/odom    nan | avance odom 0.000 m  lidar atrás   nan m
+[medir_odometria-4] [INFO] [1793050293.849841071] [medir_odometria]: bag  14.5 s | giro odom  0.0°  IMU    -0.3°  IMU/odom    nan | avance odom 0.000 m  lidar atrás 1.352 m
+[medir_odometria-4] [INFO] [1793050295.848727969] [medir_odometria]: bag  16.5 s | giro odom  0.5°  IMU     1.5°  IMU/odom    nan | avance odom 0.450 m  lidar atrás 1.030 m
+[medir_odometria-4] [INFO] [1793050297.850304807] [medir_odometria]: bag  18.5 s | giro odom  1.7°  IMU     0.5°  IMU/odom  0.271 | avance odom 0.948 m  lidar atrás   nan m
+[medir_odometria-4] [INFO] [1793050299.950036345] [medir_odometria]: bag  20.6 s | giro odom  8.5°  IMU    -4.6°  IMU/odom -0.538 | avance odom 0.949 m  lidar atrás 0.782 m
+[detector-2] [INFO] [1793050301.538744613] [detector]: No hay cuadrado rojo
+[medir_odometria-4] [INFO] [1793050302.049560941] [medir_odometria]: bag  22.7 s | giro odom 16.1°  IMU   -10.3°  IMU/odom -0.642 | avance odom 0.977 m  lidar atrás 0.800 m
+[detector-2] [INFO] [1793050303.213061862] [detector]: Cuadrado rojo detectado
+[medir_odometria-4] [INFO] [1793050304.050252603] [medir_odometria]: bag  24.7 s | giro odom-20.8°  IMU    19.7°  IMU/odom -0.946 | avance odom 0.972 m  lidar atrás   nan m
+[medir_odometria-4] [INFO] [1793050306.148889109] [medir_odometria]: bag  26.8 s | giro odom-13.0°  IMU    13.7°  IMU/odom -1.056 | avance odom 1.306 m  lidar atrás 0.520 m
+[detector-2] [INFO] [1793050307.113011571] [detector]: No hay cuadrado rojo
+[medir_odometria-4] [INFO] [1793050308.149511735] [medir_odometria]: bag  28.8 s | giro odom 11.9°  IMU    -8.4°  IMU/odom -0.707 | avance odom 1.468 m  lidar atrás 0.436 m
+[medir_odometria-4] [INFO] [1793050310.249893261] [medir_odometria]: bag  30.9 s | giro odom -0.9°  IMU     1.8°  IMU/odom    nan | avance odom 1.621 m  lidar atrás 0.237 m
+[detector-2] [INFO] [1793050310.717255453] [detector]: Cuadrado rojo detectado
+[medir_odometria-4] [INFO] [1793050312.249276234] [medir_odometria]: bag  32.9 s | giro odom-63.1°  IMU    51.7°  IMU/odom -0.819 | avance odom 1.624 m  lidar atrás 0.247 m
+[medir_odometria-4] [INFO] [1793050314.249766022] [medir_odometria]: bag  34.9 s | giro odom-62.9°  IMU    50.6°  IMU/odom -0.804 | avance odom 1.565 m  lidar atrás 0.508 m
+[detector-2] [INFO] [1793050315.215077101] [detector]: No hay cuadrado rojo
+[medir_odometria-4] [INFO] [1793050316.351233623] [medir_odometria]: bag  37.0 s | giro odom 55.9°  IMU   -42.1°  IMU/odom -0.752 | avance odom 1.571 m  lidar atrás 0.464 m
+[medir_odometria-4] [INFO] [1793050318.450674785] [medir_odometria]: bag  39.1 s | giro odom115.6°  IMU   -87.3°  IMU/odom -0.755 | avance odom 1.574 m  lidar atrás 0.538 m
+[medir_odometria-4] [INFO] [1793050320.450120921] [medir_odometria]: bag  41.1 s | giro odom132.8°  IMU  -106.9°  IMU/odom -0.805 | avance odom 1.430 m  lidar atrás 0.560 m
+[medir_odometria-4] [INFO] [1793050322.549546672] [medir_odometria]: bag  43.2 s | giro odom113.7°  IMU   -93.6°  IMU/odom -0.823 | avance odom 1.747 m  lidar atrás 0.514 m
+[medir_odometria-4] [INFO] [1793050324.550010650] [medir_odometria]: bag  45.2 s | giro odom113.8°  IMU   -91.8°  IMU/odom -0.807 | avance odom 1.852 m  lidar atrás 0.343 m
+[detector-2] [INFO] [1793050325.713839984] [detector]: Cuadrado rojo detectado
+[medir_odometria-4] [INFO] [1793050326.648790852] [medir_odometria]: bag  47.3 s | giro odom177.2°  IMU  -142.8°  IMU/odom -0.806 | avance odom 1.717 m  lidar atrás 0.682 m
+[medir_odometria-4] [INFO] [1793050328.750015342] [medir_odometria]: bag  49.4 s | giro odom235.0°  IMU  -186.9°  IMU/odom -0.796 | avance odom 1.471 m  lidar atrás 1.256 m
+[detector-2] [INFO] [1793050330.117358452] [detector]: No hay cuadrado rojo
+[medir_odometria-4] [INFO] [1793050330.851636333] [medir_odometria]: bag  51.5 s | giro odom235.4°  IMU  -186.6°  IMU/odom -0.792 | avance odom 1.505 m  lidar atrás 1.270 m
+[detector-2] [INFO] [1793050330.916262280] [detector]: Cuadrado rojo detectado
+[medir_odometria-4] [INFO] [1793050332.849207984] [medir_odometria]: bag  53.5 s | giro odom234.7°  IMU  -186.5°  IMU/odom -0.795 | avance odom 1.397 m  lidar atrás 1.258 m
+[medir_odometria-4] [INFO] [1793050334.949442768] [medir_odometria]: bag  55.6 s | giro odom241.3°  IMU  -189.1°  IMU/odom -0.784 | avance odom 1.383 m  lidar atrás 1.256 m
+[detector-2] [INFO] [1793050335.115157162] [detector]: No hay cuadrado rojo
+[detector-2] [INFO] [1793050336.215482453] [detector]: Cuadrado rojo detectado
+[medir_odometria-4] [INFO] [1793050336.950636768] [medir_odometria]: bag  57.6 s | giro odom211.0°  IMU  -168.3°  IMU/odom -0.798 | avance odom 1.385 m  lidar atrás 1.104 m
+[medir_odometria-4] [INFO] [1793050339.049591405] [medir_odometria]: bag  59.7 s | giro odom219.2°  IMU  -175.6°  IMU/odom -0.801 | avance odom 1.381 m  lidar atrás 1.088 m
+[medir_odometria-4] [INFO] [1793050341.148836184] [medir_odometria]: bag  61.8 s | giro odom220.9°  IMU  -177.2°  IMU/odom -0.802 | avance odom 0.817 m  lidar atrás   nan m
+[medir_odometria-4] [INFO] [1793050343.148882511] [medir_odometria]: bag  63.8 s | giro odom236.3°  IMU  -187.7°  IMU/odom -0.795 | avance odom 0.874 m  lidar atrás 0.812 m
+[medir_odometria-4] [INFO] [1793050345.250800563] [medir_odometria]: bag  65.9 s | giro odom214.3°  IMU  -169.6°  IMU/odom -0.791 | avance odom 0.899 m  lidar atrás   nan m
+[medir_odometria-4] [INFO] [1793050347.350125722] [medir_odometria]: bag  68.0 s | giro odom208.7°  IMU  -164.9°  IMU/odom -0.790 | avance odom 0.723 m  lidar atrás 0.770 m
+[medir_odometria-4] [INFO] [1793050349.449331546] [medir_odometria]: bag  70.1 s | giro odom213.9°  IMU  -169.6°  IMU/odom -0.793 | avance odom 0.637 m  lidar atrás 0.582 m
+[medir_odometria-4] [INFO] [1793050351.549595761] [medir_odometria]: bag  72.2 s | giro odom213.6°  IMU  -168.8°  IMU/odom -0.791 | avance odom 0.598 m  lidar atrás   nan m
+[medir_odometria-4] [INFO] [1793050353.650141336] [medir_odometria]: bag  74.3 s | giro odom215.6°  IMU  -171.2°  IMU/odom -0.794 | avance odom 0.614 m  lidar atrás 0.596 m
+[medir_odometria-4] [INFO] [1793050355.651018043] [medir_odometria]: bag  76.3 s | giro odom222.1°  IMU  -176.2°  IMU/odom -0.794 | avance odom 0.519 m  lidar atrás 0.489 m
+[detector-2] [INFO] [1793050356.422309827] [detector]: No hay cuadrado rojo
+[medir_odometria-4] [INFO] [1793050357.748940586] [medir_odometria]: bag  78.4 s | giro odom317.0°  IMU  -251.4°  IMU/odom -0.793 | avance odom 0.520 m  lidar atrás 0.912 m
+[medir_odometria-4] [INFO] [1793050359.749318464] [medir_odometria]: bag  80.4 s | giro odom340.4°  IMU  -267.9°  IMU/odom -0.787 | avance odom 0.791 m  lidar atrás 0.630 m
+[detector-2] [INFO] [1793050360.517020611] [detector]: Cuadrado rojo detectado
+[detector-2] [INFO] [1793050361.517453599] [detector]: No hay cuadrado rojo
+[medir_odometria-4] [INFO] [1793050361.849555177] [medir_odometria]: bag  82.5 s | giro odom486.0°  IMU  -384.9°  IMU/odom -0.792 | avance odom 0.792 m  lidar atrás 1.328 m
+[detector-2] [INFO] [1793050363.017105807] [detector]: Cuadrado rojo detectado
+[medir_odometria-4] [INFO] [1793050363.849835103] [medir_odometria]: bag  84.5 s | giro odom632.1°  IMU  -501.9°  IMU/odom -0.794 | avance odom 0.789 m  lidar atrás 0.431 m
+[detector-2] [INFO] [1793050364.219280865] [detector]: No hay cuadrado rojo
+[medir_odometria-4] [INFO] [1793050365.949462588] [medir_odometria]: bag  86.6 s | giro odom782.8°  IMU  -623.3°  IMU/odom -0.796 | avance odom 0.781 m  lidar atrás 0.652 m
+[detector-2] [INFO] [1793050366.719270273] [detector]: Cuadrado rojo detectado
+[medir_odometria-4] [INFO] [1793050368.049597444] [medir_odometria]: bag  88.7 s | giro odom903.2°  IMU  -723.7°  IMU/odom -0.801 | avance odom 0.743 m  lidar atrás 1.252 m
+[detector-2] [INFO] [1793050368.517888814] [detector]: No hay cuadrado rojo
+[medir_odometria-4] [INFO] [1793050370.050565312] [medir_odometria]: bag  90.7 s | giro odom903.5°  IMU  -723.4°  IMU/odom -0.801 | avance odom 0.426 m  lidar atrás 0.540 m
+[detector-2] [INFO] [1793050371.318143704] [detector]: Cuadrado rojo detectado
+[medir_odometria-4] [INFO] [1793050372.148837246] [medir_odometria]: bag  92.8 s | giro odom841.8°  IMU  -674.9°  IMU/odom -0.802 | avance odom 0.425 m  lidar atrás 0.634 m
+[medir_odometria-4] [INFO] [1793050374.150490693] [medir_odometria]: bag  94.8 s | giro odom844.3°  IMU  -676.2°  IMU/odom -0.801 | avance odom 0.508 m  lidar atrás   nan m
+[detector-2] [INFO] [1793050374.819792412] [detector]: No hay cuadrado rojo
+[medir_odometria-4] [INFO] [1793050376.151264243] [medir_odometria]: bag  96.8 s | giro odom970.7°  IMU  -774.4°  IMU/odom -0.798 | avance odom 0.513 m  lidar atrás 0.355 m
+[medir_odometria-4] [INFO] [1793050378.249018460] [medir_odometria]: bag  98.9 s | giro odom  1023.9°  IMU  -820.1°  IMU/odom -0.801 | avance odom 0.424 m  lidar atrás 0.510 m
+[detector-2] [INFO] [1793050379.519525312] [detector]: Cuadrado rojo detectado
+[detector-2] [INFO] [1793050380.118886829] [detector]: No hay cuadrado rojo
+[medir_odometria-4] [INFO] [1793050380.250625591] [medir_odometria]: bag 100.9 s | giro odom  1059.5°  IMU  -850.1°  IMU/odom -0.802 | avance odom 0.426 m  lidar atrás 0.656 m
+[medir_odometria-4] [INFO] [1793050382.250930186] [medir_odometria]: bag 102.9 s | giro odom  1024.2°  IMU  -818.5°  IMU/odom -0.799 | avance odom 0.514 m  lidar atrás 0.495 m
+[medir_odometria-4] [INFO] [1793050384.349211251] [medir_odometria]: bag 105.0 s | giro odom  1026.2°  IMU  -824.1°  IMU/odom -0.803 | avance odom 0.361 m  lidar atrás 0.582 m
+[detector-2] [INFO] [1793050384.718808061] [detector]: Cuadrado rojo detectado
+[medir_odometria-4] [INFO] [1793050386.351193235] [medir_odometria]: bag 107.0 s | giro odom  1043.8°  IMU  -841.8°  IMU/odom -0.806 | avance odom 0.959 m  lidar atrás 0.608 m
+[medir_odometria-4] [INFO] [1793050388.450937410] [medir_odometria]: bag 109.1 s | giro odom  1046.2°  IMU  -844.1°  IMU/odom -0.807 | avance odom 1.103 m  lidar atrás 0.372 m
+[detector-2] [INFO] [1793050389.922427370] [detector]: No hay cuadrado rojo
+[medir_odometria-4] [INFO] [1793050390.450225493] [medir_odometria]: bag 111.1 s | giro odom  1116.4°  IMU  -896.7°  IMU/odom -0.803 | avance odom 1.131 m  lidar atrás 0.217 m
+[medir_odometria-4] [INFO] [1793050392.550374052] [medir_odometria]: bag 113.2 s | giro odom  1213.9°  IMU  -977.7°  IMU/odom -0.805 | avance odom 1.101 m  lidar atrás 0.712 m
+[medir_odometria-4] [INFO] [1793050394.551140715] [medir_odometria]: bag 115.2 s | giro odom  1253.0°  IMU -1007.1°  IMU/odom -0.804 | avance odom 1.021 m  lidar atrás 0.388 m
+[medir_odometria-4] [INFO] [1793050396.649964268] [medir_odometria]: bag 117.3 s | giro odom  1292.2°  IMU -1038.3°  IMU/odom -0.804 | avance odom 0.953 m  lidar atrás 0.383 m
+[detector-2] [INFO] [1793050396.920854124] [detector]: Cuadrado rojo detectado
+[medir_odometria-4] [INFO] [1793050398.750253329] [medir_odometria]: bag 119.4 s | giro odom  1339.0°  IMU -1076.5°  IMU/odom -0.804 | avance odom 0.913 m  lidar atrás   nan m
+^C[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+
+Giro
+    odom = 1339 
+    IMU = -1076
+    IMU/odom = −0.803584765
+
+
+Avance
+    odom = o m ; lidar atras = 1.352m
+    odom = 0.949 m ; lidar atras = 0.782 m
+
+    Δodom = 0,949 − 0,000 = 0,949 m
+    Δlidar = |0,782 − 1,352| = 0,570 m
+    Escala = Δlidar / Δodom = 0,570 / 0,949 ≈ 0,60

@@ -23,6 +23,9 @@ setup(
     entry_points={
         'console_scripts': [
             'evaluador = evaluador_victimas.evaluador:main',
+            'juntar_victimas = evaluador_victimas.juntar_victimas:main',
+            'medir_odometria = evaluador_victimas.medir_odometria:main',
+            'odom_corregida = evaluador_victimas.odom_corregida:main',
         ],
     },
 )
