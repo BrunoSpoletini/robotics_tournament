@@ -38,13 +38,34 @@ def indice_rayo_hacia_atras(scan: LaserScan) -> int:
          `ros2 run tf2_ros tf2_echo base_footprint laser_link` (con el bag
          corriendo). Mirá la rotación: ¿hacia dónde apunta el ángulo 0 del
          lidar, visto desde el robot?
+
+        At time 0.0
+        - Translation: [0.043, 0.000, 0.181]
+        - Rotation: in Quaternion (xyzw) [0.000, 0.000, 1.000, 0.000]
+        - Rotation: in RPY (radian) [0.000, -0.000, 3.142]
+        - Rotation: in RPY (degree) [0.000, -0.000, 180.000]
+        - Matrix:
+        -1.000 -0.000  0.000  0.043
+        0.000 -1.000  0.000  0.000
+        0.000  0.000  1.000  0.181
+        0.000  0.000  0.000  1.000
+
       2. Con eso, decidí qué ángulo del lidar apunta hacia atrás del robot.
       3. Despejá i de la fórmula de arriba y redondealo a entero.
       4. Probalo: al principio del bag, con el robot quieto, `lidar atrás` tiene
          que dar un valor finito y chico (unos 0,3 m: la pared que el robot
          tiene detrás), no `nan`.
     """
-    return 0
+    # El lidar está montado mirando hacia adelante, así que el rayo hacia atrás es el que tiene ángulo pi (180°) en el frame del lidar.
+    #
+    # El rayo i tiene ángulo scan.angle_min + i * scan.angle_increment.
+    # Queremos el rayo que tenga ángulo pi:
+    #   scan.angle_min + i * scan.angle_increment = pi
+    #   i * scan.angle_increment = pi - scan.angle_min
+    #   i = (pi - scan.angle_min) / scan.angle_increment
+    i = (math.pi - scan.angle_min) / scan.angle_increment
+    return round(i)
+    
 
 
 class MedirOdometria(Node):
@@ -98,6 +119,10 @@ class MedirOdometria(Node):
         self.avance_odom = math.hypot(p.x - self.inicio[0], p.y - self.inicio[1])
 
         # TODO: acá va el giro (pasos 1 a 3 del docstring).
+        yaw = yaw_de_quaternion(msg.pose.pose.orientation)
+        if self.yaw_anterior is not None:
+            self.giro_odom += normalizar_angulo(yaw - self.yaw_anterior)
+        self.yaw_anterior = yaw
 
         t = segundos(msg.header.stamp)
         if self.t0 is None:
@@ -121,7 +146,10 @@ class MedirOdometria(Node):
              `msg.angular_velocity.z * (t - self.t_imu_anterior)`.
           3. Guardá `t` en `self.t_imu_anterior`.
         """
-        pass
+        t = segundos(msg.header.stamp)
+        if self.t_imu_anterior is not None:
+            self.giro_imu += msg.angular_velocity.z * (t - self.t_imu_anterior)
+        self.t_imu_anterior = t
 
     def recibir_scan(self, msg: LaserScan):
         r = msg.ranges[indice_rayo_hacia_atras(msg)]

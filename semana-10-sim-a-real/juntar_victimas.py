@@ -77,7 +77,20 @@ class JuntarVictimas(Node):
                `x + self.mitad * dx / d`, y lo mismo para `y`;
              - pasáselo a `self.agregar(x, y)`.
         """
-        pass
+        pos_robot = self.posicion_robot()
+        if pos_robot is None:
+            return
+        robot_x, robot_y = pos_robot
+        for pose in msg.poses:
+            x, y = pose.position.x, pose.position.y
+            dx = x - robot_x
+            dy = y - robot_y
+            d = math.hypot(dx, dy)
+            if d < 1e-6:
+                continue
+            x += self.mitad * dx / d
+            y += self.mitad * dy / d
+            self.agregar(x, y)
 
     def agregar(self, x, y):
         """
@@ -95,7 +108,15 @@ class JuntarVictimas(Node):
         ¿Por qué mediana y no promedio? Pensá qué pasa con unos pocos puntos
         que caen lejos de la caja.
         """
-        pass
+        for g in self.grupos:
+            mediana = np.median(np.array(g['puntos']), axis=0)
+            distancia = math.hypot(x - mediana[0], y - mediana[1])
+            if distancia < self.radio:
+                g['puntos'].append((x, y))
+                self.quizas_publicar(g)
+                return
+        self.grupos.append({'puntos': [(x, y)], 'publicado': False})
+        self.quizas_publicar(self.grupos[-1])
 
     def quizas_publicar(self, g):
         """
@@ -111,7 +132,18 @@ class JuntarVictimas(Node):
           3. Marcá el grupo como publicado, sumá 1 a `self.publicados` y
              logueá dónde lo publicaste.
         """
-        pass
+        if g['publicado'] or self.publicados >= self.victimas or len(g['puntos']) < self.minimas:
+            return
+        mediana = np.median(np.array(g['puntos']), axis=0)
+        punto = PointStamped()
+        punto.header.frame_id = 'map'
+        punto.header.stamp = self.get_clock().now().to_msg()
+        punto.point.x = float(mediana[0])
+        punto.point.y = float(mediana[1])
+        self.pub.publish(punto)
+        g['publicado'] = True
+        self.publicados += 1
+        self.get_logger().info(f'Publicada víctima en ({punto.point.x:.2f}, {punto.point.y:.2f})')
 
 
 def main(args=None):

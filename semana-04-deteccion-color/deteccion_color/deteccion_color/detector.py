@@ -42,6 +42,8 @@ class DetectorColor(Node):
         self.puente = CvBridge()
 
         self.publisher_ = self.create_publisher(Bool, 'rojo_detectado', 10)
+        # La máscara como imagen mono8 (un canal, 0-255), para verla en RViz.
+        self.publisher_mascara = self.create_publisher(Image, 'mascara_rojo', 10)
         # qos_profile_sensor_data: la cámara publica best effort, igual que el
         # lidar de la semana 03. Con el default reliable no llegaría ni un
         # frame, y sin ningún error.
@@ -53,10 +55,12 @@ class DetectorColor(Node):
 
         self.ultima_imagen = None
         self.ultimo_valor_publicado = None
+        self.ultimo_header = None
 
     def recibir_imagen(self, msg: Image):
         """Convierte el Image de ROS a un array BGR de OpenCV y lo guarda.
         No decide nada acá — la decisión pasa en procesar_imagen()."""
+        self.ultimo_header = msg.header
         self.ultima_imagen = self.puente.imgmsg_to_cv2(msg, desired_encoding='bgr8')
 
     def area_mayor_contorno(self, mascara: np.ndarray) -> float:
@@ -115,6 +119,11 @@ class DetectorColor(Node):
 
         imagen_hsv = cv2.cvtColor(self.ultima_imagen, cv2.COLOR_BGR2HSV)
         mascara = self.mascara_rojo(imagen_hsv)
+
+        msg_mascara = self.puente.cv2_to_imgmsg(mascara, encoding='mono8')
+        msg_mascara.header = self.ultimo_header
+        self.publisher_mascara.publish(msg_mascara)
+
         area = self.area_mayor_contorno(mascara)
 
         return area > self.area_minima_px
