@@ -140,6 +140,9 @@ class JuntarVictimas(Node):
         punto.header.stamp = self.get_clock().now().to_msg()
         punto.point.x = float(mediana[0])
         punto.point.y = float(mediana[1])
+        if math.isnan(punto.point.x) or math.isnan(punto.point.y) or math.isinf(punto.point.x) or math.isinf(punto.point.y):
+            self.get_logger().warn('No se publica víctima. Valor invalido')
+            return
         self.pub.publish(punto)
         g['publicado'] = True
         self.publicados += 1

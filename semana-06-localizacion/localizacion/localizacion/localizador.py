@@ -79,6 +79,10 @@ class Localizador(Node):
         # más lento; subirlo, al revés.
         self.declare_parameter('submuestreo_scan', 15)
 
+        # Parametros de Escala
+        self.declare_parameter('escala_avance',1.0)
+        self.declare_parameter('escala_giro',1.0)
+
         self.map_frame = self.get_parameter('map_frame').value
         self.odom_frame = self.get_parameter('odom_frame').value
         self.base_frame = self.get_parameter('base_frame').value
@@ -90,6 +94,8 @@ class Localizador(Node):
         self.gamma5 = self.get_parameter('gamma5').value
         self.gamma6 = self.get_parameter('gamma6').value
         self.submuestreo_scan = self.get_parameter('submuestreo_scan').value
+        self.escala_avance = self.get_parameter('escala_avance').value
+        self.escala_giro = self.get_parameter('escala_giro').value
 
         # Estado del filtro: array (num_particulas, 4) con columnas
         # (x, y, theta, peso). Arranca como una nube gaussiana angosta
@@ -377,9 +383,9 @@ class Localizador(Node):
         # 4. Componer sobre la pose de cada partícula, con su propio theta.
         x, y, theta = particulas[:, 0], particulas[:, 1], particulas[:, 2]
         c, s = np.cos(theta), np.sin(theta)
-        x_nueva = x + d_trans_x_hat * c - d_trans_y_hat * s
-        y_nueva = y + d_trans_x_hat * s + d_trans_y_hat * c
-        theta_nueva = theta + d_rot_hat
+        x_nueva = x + (d_trans_x_hat * c - d_trans_y_hat * s) * self.escala_avance
+        y_nueva = y + (d_trans_x_hat * s + d_trans_y_hat * c) * self.escala_avance
+        theta_nueva = theta + d_rot_hat * self.escala_giro
         theta_nueva = np.arctan2(np.sin(theta_nueva), np.cos(theta_nueva))
 
         # 5. Array nuevo, mismo peso.

@@ -5,7 +5,7 @@ from nav_msgs.msg import Odometry
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
 from sensor_msgs.msg import Imu, LaserScan
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Path
 
 
@@ -41,25 +41,47 @@ class OdomCorregida(Node):
         self.camino_odom_pub = self.create_publisher(Path, "/camino_odom", 10)
         self.camino_corregido_pub = self.create_publisher(Path, "/camino_corregido", 10)
 
-        self.corrected_pose = Pose()
-        self.corrected_pose.position.x = 0.0
-        self.corrected_pose.position.y = 0.0
-        self.corrected_pose.position.z = 0.0
-        self.corrected_pose.orientation.x = 0.0
-        self.corrected_pose.orientation.y = 0.0
-        self.corrected_pose.orientation.z = 0.0
-        self.corrected_pose.orientation.w = 1.0
+        self.corrected_pose = PoseStamped()
+        self.corrected_pose.header.frame_id = "odom"
+        self.corrected_pose.pose.orientation.w = 1.0
 
-        self.current_odom = None
+        self.camino_odom = Path()
+        self.camino_odom.header.frame_id = "odom"
+
+        self.camino_corregido = Path()
+        self.camino_corregido.header.frame_id = "odom"
+
         self.last_odom = None
-        self.corrected_pose = Pose()
+        self.current_odom = None
 
 
     def odom_callback(self, msg):
-        self.current_odom = msg
 
+        self.current_odom = msg
+        
         # Calcular cuanto se movio el robot desde la ultima odometria
         if self.last_odom is None:
+            self.last_odom = msg
+
+            initial_pose = PoseStamped()
+            initial_pose.header = msg.header
+            initial_pose.pose = msg.pose.pose
+
+            self.camino_odom.header.stamp = msg.header.stamp
+            self.camino_odom.poses.append(initial_pose)
+            self.camino_odom_pub.publish(self.camino_odom)
+
+            self.corrected_pose.header = msg.header
+            self.corrected_pose.pose = msg.pose.pose
+
+            corrected_initial = PoseStamped()
+            corrected_initial.header = msg.header
+            corrected_initial.pose = self.corrected_pose.pose
+
+            self.camino_corregido.header.stamp = msg.header.stamp
+            self.camino_corregido.poses.append(corrected_initial)
+            self.camino_corregido_pub.publish(self.camino_corregido)
+
             return
         
         delta_x = self.current_odom.pose.pose.position.x - self.last_odom.pose.pose.position.x
@@ -69,40 +91,40 @@ class OdomCorregida(Node):
         delta_theta = normalizar_angulo(delta_theta)
 
         # Aplicar el desplazamiento y giro corregidos a la pose corregida
-        self.corrected_pose.position.x += self.escala_avance * delta_x
-        self.corrected_pose.position.y += self.escala_avance * delta_y
-        current_yaw = yaw_de_quaternion(self.corrected_pose.orientation)
+        self.corrected_pose.pose.position.x += (self.escala_avance * delta_x)
+        self.corrected_pose.pose.position.y += (self.escala_avance * delta_y)
+        current_yaw = yaw_de_quaternion(self.corrected_pose.pose.orientation)
         new_yaw = current_yaw + self.escala_giro * delta_theta
         new_yaw = normalizar_angulo(new_yaw)
 
-        self.corrected_pose.orientation.x = 0.0
-        self.corrected_pose.orientation.y = 0.0
-        self.corrected_pose.orientation.z = math.sin(new_yaw / 2.0)
-        self.corrected_pose.orientation.w = math.cos(new_yaw / 2.0)
+        self.corrected_pose.header.stamp = self.current_odom.header.stamp
+        self.corrected_pose.header.frame_id = "odom"
 
-        self.last_odom = self.current_odom
+        self.corrected_pose.pose.orientation.x = 0.0
+        self.corrected_pose.pose.orientation.y = 0.0
+        self.corrected_pose.pose.orientation.z = math.sin(new_yaw / 2.0)
+        self.corrected_pose.pose.orientation.w = math.cos(new_yaw / 2.0)
 
-        self.publish_caminos()
+        original_pose = PoseStamped()
+        original_pose.header = msg.header
+        original_pose.pose = msg.pose.pose
 
-    def publish_caminos(self):
-        # Publicar el camino de odometría
-        camino_odom = Path()
-        camino_odom.header.stamp = self.current_odom.header.stamp
-        camino_odom.header.frame_id = "odom"
-        camino_odom.poses.append(self.current_odom.pose)
-        self.camino_odom_pub.publish(camino_odom)
+        self.camino_odom.header.stamp = msg.header.stamp
+        self.camino_odom.poses.append(original_pose)
+        self.camino_odom_pub.publish(self.camino_odom)
 
-        # Publicar el camino corregido
-        camino_corregido = Path()
-        camino_corregido.header.stamp = self.current_odom.header.stamp
-        camino_corregido.header.frame_id = "odom"
-        corrected_pose_stamped = Odometry()
-        corrected_pose_stamped.header.stamp = self.current_odom.header.stamp
-        corrected_pose_stamped.header.frame_id = "odom"
-        corrected_pose_stamped.pose.pose = self.corrected_pose
-        camino_corregido.poses.append(corrected_pose_stamped.pose)
-        self.camino_corregido_pub.publish(camino_corregido)
+        # Publish corrected path.
+        corrected_pose = PoseStamped()
+        corrected_pose.header = self.corrected_pose.header
+        corrected_pose.pose = self.corrected_pose.pose
 
+        self.camino_corregido.header.stamp = msg.header.stamp
+        self.camino_corregido.poses.append(corrected_pose)
+        self.camino_corregido_pub.publish(self.camino_corregido)
+
+        self.last_odom = msg
+
+ 
 def main(args=None):
     rclpy.init(args=args)
     nodo = OdomCorregida()

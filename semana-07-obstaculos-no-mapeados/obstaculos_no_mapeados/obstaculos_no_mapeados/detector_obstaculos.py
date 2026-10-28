@@ -114,7 +114,7 @@ class DetectorObstaculos(Node):
         # El lidar publica en Best Effort (qos_profile_sensor_data), como en
         # las semanas 03, 04 y 06.
         self.create_subscription(
-            LaserScan, 'scan', self.recibir_scan, qos_profile_sensor_data)
+            LaserScan, 'scan_rojo', self.recibir_scan, qos_profile_sensor_data)
 
         self.pub_scan_no_mapeado = self.create_publisher(LaserScan, 'scan_no_mapeado', 10)
         self.pub_objetos = self.create_publisher(PoseArray, 'objetos_no_mapeados', 10)
