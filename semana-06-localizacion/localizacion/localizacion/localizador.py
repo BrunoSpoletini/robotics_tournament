@@ -97,6 +97,8 @@ class Localizador(Node):
         self.escala_avance = self.get_parameter('escala_avance').value
         self.escala_giro = self.get_parameter('escala_giro').value
 
+        self.get_logger().info(f'Started Localizador with: {self.escala_avance} escala_avance and {self.escala_giro} escala_giro')
+
         # Estado del filtro: array (num_particulas, 4) con columnas
         # (x, y, theta, peso). Arranca como una nube gaussiana angosta
         # alrededor de la pose inicial conocida (no es localización global).

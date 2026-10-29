@@ -219,120 +219,120 @@ class DetectorScanColor(Node):
               rangos_filtrados.tolist() como ranges. Publicarlo en
               self.publisher_.
         """
-        # # 1. Sin imagen o sin intrínsecos no hay sobre qué proyectar
-        # if self.ultima_imagen is None or self.info_camara is None:
-        #     return
-
-        # # 2. Transformada lidar -> cámara
-        # transform = self.obtener_transform_laser_a_camara(msg.header.frame_id)
-        # if transform is None:
-        #     return
-
-        # # 3. Traslación y rotación
-        # t = transform.transform.translation
-        # q = transform.transform.rotation
-        # traslacion = np.array([t.x, t.y, t.z])
-        # rotacion = cuaternion_a_rotacion(q.x, q.y, q.z, q.w)
-
-        # # 4. Rangos y ángulos de cada rayo
-        # rangos = np.array(msg.ranges)
-        # angulos = msg.angle_min + np.arange(len(rangos)) * msg.angle_increment
-
-        # # 5. Mediciones válidas
-        # validos = (
-        #     np.isfinite(rangos)
-        #     & (rangos >= msg.range_min)
-        #     & (rangos <= msg.range_max)
-        # )
-
-        # # 6. Proyección de cada punto a la imagen
-        # info = self.info_camara
-        # u, v, adelante = puntos_laser_a_pixeles(
-        #     rangos, angulos, rotacion, traslacion,
-        #     info['fx'], info['fy'], info['cx'], info['cy']
-        # )
-
-        # # 7. Puntos que caen adentro de la imagen (las comparaciones con nan
-        # # dan False, así que los rayos inválidos se descartan solos)
-        # ancho, alto = info['width'], info['height']
-        # dentro_de_imagen = adelante & (u >= 0) & (u < ancho) & (v >= 0) & (v < alto)
-
-        # # 8. Máscara de rojo de la imagen actual
-        # imagen_hsv = cv2.cvtColor(self.ultima_imagen, cv2.COLOR_BGR2HSV)
-        # mascara = mascara_rojo(
-        #     imagen_hsv,
-        #     self.hue_rojo_bajo_1, self.hue_rojo_alto_1,
-        #     self.hue_rojo_bajo_2, self.hue_rojo_alto_2,
-        #     self.saturacion_min, self.valor_min
-        # )
-
-        # # 9. Rayos cuyo pixel es rojo (la imagen se indexa [fila, columna] = [v, u])
-        # es_rojo = np.zeros(len(rangos), dtype=bool)
-        # indices = np.where(dentro_de_imagen)[0]
-        # columnas = u[indices].astype(int)
-        # filas = v[indices].astype(int)
-        # es_rojo[indices] = mascara[filas, columnas] > 0
-
-        # # 10. Lo que no es válido y rojo queda en infinito
-        # rangos_filtrados = np.where(validos & es_rojo, rangos, math.inf)
-
-        # # 11. Publicar el scan filtrado
-        # scan_rojo = LaserScan()
-        # scan_rojo.header = msg.header
-        # scan_rojo.angle_min = msg.angle_min
-        # scan_rojo.angle_max = msg.angle_max
-        # scan_rojo.angle_increment = msg.angle_increment
-        # scan_rojo.time_increment = msg.time_increment
-        # scan_rojo.scan_time = msg.scan_time
-        # scan_rojo.range_min = msg.range_min
-        # scan_rojo.range_max = msg.range_max
-        # scan_rojo.ranges = rangos_filtrados.tolist()
-        # self.publisher_.publish(scan_rojo)
-
+        # 1. Sin imagen o sin intrínsecos no hay sobre qué proyectar
         if self.ultima_imagen is None or self.info_camara is None:
             return
 
-        tf_laser_camara = self.obtener_transform_laser_a_camara(msg.header.frame_id)
-        if tf_laser_camara is None:
+        # 2. Transformada lidar -> cámara
+        transform = self.obtener_transform_laser_a_camara(msg.header.frame_id)
+        if transform is None:
             return
 
-        tf_translation = np.array([tf_laser_camara.transform.translation.x,
-                                   tf_laser_camara.transform.translation.y,
-                                   tf_laser_camara.transform.translation.z])
-        tf_rotation = cuaternion_a_rotacion(tf_laser_camara.transform.rotation.x,
-                                            tf_laser_camara.transform.rotation.y,
-                                            tf_laser_camara.transform.rotation.z,
-                                            tf_laser_camara.transform.rotation.w)
+        # 3. Traslación y rotación
+        t = transform.transform.translation
+        q = transform.transform.rotation
+        traslacion = np.array([t.x, t.y, t.z])
+        rotacion = cuaternion_a_rotacion(q.x, q.y, q.z, q.w)
+
+        # 4. Rangos y ángulos de cada rayo
         rangos = np.array(msg.ranges)
         angulos = msg.angle_min + np.arange(len(rangos)) * msg.angle_increment
-        validos = np.isfinite(rangos) & (rangos >= msg.range_min)
-        
-        (u, v, adelante) = puntos_laser_a_pixeles(rangos, angulos, tf_rotation, tf_translation,
-                                                  self.info_camara['fx'], self.info_camara['fy'],
-                                                  self.info_camara['cx'], self.info_camara['cy'])
-        dentro_de_imagen = adelante & (u >= 0) & (u < self.info_camara['width']) & (v >= 0) & (v < self.info_camara['height'])
-        imagen_hsv = cv2.cvtColor(self.ultima_imagen, cv2.COLOR_BGR2HSV)
-        mascara = mascara_rojo(imagen_hsv, self.hue_rojo_bajo_1, self.hue_rojo_alto_1, self.hue_rojo_bajo_2, self.hue_rojo_alto_2, self.saturacion_min, self.valor_min)
-        es_rojo = np.zeros_like(rangos, dtype=bool)
-        indices_dentro = np.where(dentro_de_imagen)[0]
-        u_dentro = u[indices_dentro].astype(int)
-        v_dentro = v[indices_dentro].astype(int)
-        es_rojo[indices_dentro] = mascara[v_dentro, u_dentro]
 
+        # 5. Mediciones válidas
+        validos = (
+            np.isfinite(rangos)
+            & (rangos >= msg.range_min)
+            & (rangos <= msg.range_max)
+        )
+
+        # 6. Proyección de cada punto a la imagen
+        info = self.info_camara
+        u, v, adelante = puntos_laser_a_pixeles(
+            rangos, angulos, rotacion, traslacion,
+            info['fx'], info['fy'], info['cx'], info['cy']
+        )
+
+        # 7. Puntos que caen adentro de la imagen (las comparaciones con nan
+        # dan False, así que los rayos inválidos se descartan solos)
+        ancho, alto = info['width'], info['height']
+        dentro_de_imagen = adelante & (u >= 0) & (u < ancho) & (v >= 0) & (v < alto)
+
+        # 8. Máscara de rojo de la imagen actual
+        imagen_hsv = cv2.cvtColor(self.ultima_imagen, cv2.COLOR_BGR2HSV)
+        mascara = mascara_rojo(
+            imagen_hsv,
+            self.hue_rojo_bajo_1, self.hue_rojo_alto_1,
+            self.hue_rojo_bajo_2, self.hue_rojo_alto_2,
+            self.saturacion_min, self.valor_min
+        )
+
+        # 9. Rayos cuyo pixel es rojo (la imagen se indexa [fila, columna] = [v, u])
+        es_rojo = np.zeros(len(rangos), dtype=bool)
+        indices = np.where(dentro_de_imagen)[0]
+        columnas = u[indices].astype(int)
+        filas = v[indices].astype(int)
+        es_rojo[indices] = mascara[filas, columnas] > 0
+
+        # 10. Lo que no es válido y rojo queda en infinito
         rangos_filtrados = np.where(validos & es_rojo, rangos, math.inf)
 
-        scan_filtrado = LaserScan()
-        scan_filtrado.header = msg.header
-        scan_filtrado.angle_min = msg.angle_min
-        scan_filtrado.angle_max = msg.angle_max
-        scan_filtrado.angle_increment = msg.angle_increment
-        scan_filtrado.time_increment = msg.time_increment
-        scan_filtrado.scan_time = msg.scan_time
-        scan_filtrado.range_min = msg.range_min
-        scan_filtrado.range_max = msg.range_max
-        scan_filtrado.ranges = rangos_filtrados.tolist()
+        # 11. Publicar el scan filtrado
+        scan_rojo = LaserScan()
+        scan_rojo.header = msg.header
+        scan_rojo.angle_min = msg.angle_min
+        scan_rojo.angle_max = msg.angle_max
+        scan_rojo.angle_increment = msg.angle_increment
+        scan_rojo.time_increment = msg.time_increment
+        scan_rojo.scan_time = msg.scan_time
+        scan_rojo.range_min = msg.range_min
+        scan_rojo.range_max = msg.range_max
+        scan_rojo.ranges = rangos_filtrados.tolist()
+        self.publisher_.publish(scan_rojo)
 
-        self.publisher_.publish(scan_filtrado)
+        # if self.ultima_imagen is None or self.info_camara is None:
+        #     return
+
+        # tf_laser_camara = self.obtener_transform_laser_a_camara(msg.header.frame_id)
+        # if tf_laser_camara is None:
+        #     return
+
+        # tf_translation = np.array([tf_laser_camara.transform.translation.x,
+        #                            tf_laser_camara.transform.translation.y,
+        #                            tf_laser_camara.transform.translation.z])
+        # tf_rotation = cuaternion_a_rotacion(tf_laser_camara.transform.rotation.x,
+        #                                     tf_laser_camara.transform.rotation.y,
+        #                                     tf_laser_camara.transform.rotation.z,
+        #                                     tf_laser_camara.transform.rotation.w)
+        # rangos = np.array(msg.ranges)
+        # angulos = msg.angle_min + np.arange(len(rangos)) * msg.angle_increment
+        # validos = np.isfinite(rangos) & (rangos >= msg.range_min)
+        
+        # (u, v, adelante) = puntos_laser_a_pixeles(rangos, angulos, tf_rotation, tf_translation,
+        #                                           self.info_camara['fx'], self.info_camara['fy'],
+        #                                           self.info_camara['cx'], self.info_camara['cy'])
+        # dentro_de_imagen = adelante & (u >= 0) & (u < self.info_camara['width']) & (v >= 0) & (v < self.info_camara['height'])
+        # imagen_hsv = cv2.cvtColor(self.ultima_imagen, cv2.COLOR_BGR2HSV)
+        # mascara = mascara_rojo(imagen_hsv, self.hue_rojo_bajo_1, self.hue_rojo_alto_1, self.hue_rojo_bajo_2, self.hue_rojo_alto_2, self.saturacion_min, self.valor_min)
+        # es_rojo = np.zeros_like(rangos, dtype=bool)
+        # indices_dentro = np.where(dentro_de_imagen)[0]
+        # u_dentro = u[indices_dentro].astype(int)
+        # v_dentro = v[indices_dentro].astype(int)
+        # es_rojo[indices_dentro] = mascara[v_dentro, u_dentro]
+
+        # rangos_filtrados = np.where(validos & es_rojo, rangos, math.inf)
+
+        # scan_filtrado = LaserScan()
+        # scan_filtrado.header = msg.header
+        # scan_filtrado.angle_min = msg.angle_min
+        # scan_filtrado.angle_max = msg.angle_max
+        # scan_filtrado.angle_increment = msg.angle_increment
+        # scan_filtrado.time_increment = msg.time_increment
+        # scan_filtrado.scan_time = msg.scan_time
+        # scan_filtrado.range_min = msg.range_min
+        # scan_filtrado.range_max = msg.range_max
+        # scan_filtrado.ranges = rangos_filtrados.tolist()
+
+        # self.publisher_.publish(scan_filtrado)
 
 
 

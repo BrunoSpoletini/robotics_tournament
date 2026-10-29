@@ -85,7 +85,7 @@ class DetectorObstaculos(Node):
         super().__init__('detector_obstaculos')
 
         self.declare_parameter('map_frame', 'map')
-        self.declare_parameter('umbral_probabilidad', 25.0)
+        self.declare_parameter('umbral_probabilidad', 101.0)
         self.declare_parameter('racha_minima', 3)
         self.declare_parameter('distancia_minima_valida', 0.25)
 
@@ -117,8 +117,8 @@ class DetectorObstaculos(Node):
             LaserScan, 'scan_rojo', self.recibir_scan, qos_profile_sensor_data)
 
         self.pub_scan_no_mapeado = self.create_publisher(LaserScan, 'scan_no_mapeado', 10)
-        self.pub_objetos = self.create_publisher(PoseArray, 'objetos_no_mapeados', 10)
-        self.pub_marcadores = self.create_publisher(MarkerArray, 'objetos_no_mapeados_markers', 10)
+        self.pub_objetos = self.create_publisher(PoseArray, 'objetos_rojos', 10)
+        self.pub_marcadores = self.create_publisher(MarkerArray, 'objetos_rojos_markers', 10)
 
     # ---------- callbacks ----------
 
@@ -297,7 +297,7 @@ class DetectorObstaculos(Node):
             marcador = Marker()
             marcador.header.frame_id = self.map_frame
             marcador.header.stamp = ahora
-            marcador.ns = 'objetos_no_mapeados'
+            marcador.ns = 'objetos_rojos'
             marcador.id = i
             marcador.type = Marker.SPHERE
             marcador.action = Marker.ADD

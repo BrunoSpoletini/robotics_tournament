@@ -100,4 +100,3 @@ Avance
 [detector_scan-3] /home/alumno/rosmaster_ws/install/deteccion_color/lib/python3.10/site-packages/deteccion_color/detector_scan.py:73: RuntimeWarning: invalid value encountered in matmul
 [detector_scan-3]   puntos_camara = puntos @ rotacion.T + traslacion
 
-[odom_corregida-5] python3: ./.obj-x86_64-linux-gnu/rosidl_generator_py/geometry_msgs/msg/_pose_stamped_s.c:56: geometry_msgs__msg__pose_stamped__convert_from_py: Assertion `strncmp("geometry_msgs.msg._pose_stamped.PoseStamped", full_classname_dest, 43) == 0' failed.

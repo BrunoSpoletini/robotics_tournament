@@ -58,6 +58,15 @@ def generate_launch_description():
         'distancia_minima_valida', default_value='0.25',
         description='Rango mínimo (m) válido, para filtrar el rebote contra el propio robot.')
 
+    parametros = [declarar_sigma,
+         declarar_particulas,
+         declarar_gamma,
+         declarar_escala_avance,
+         declarar_escala_giro,
+         declarar_umbral,
+         declarar_racha,
+         declarar_distancia]
+
 
     # # TODO - SACAR CUANDO TERMINEMOS DE TESTEAR
     # launch_mapa = IncludeLaunchDescription(
@@ -91,6 +100,7 @@ def generate_launch_description():
     )
 
     gamma = ParameterValue(LaunchConfiguration('gamma'), value_type=float)
+
     localizador = Node(
         package='localizacion',
         executable='localizador',
@@ -149,6 +159,16 @@ def generate_launch_description():
         }],
     )
 
+    juntar_victimas = Node(
+        package = 'evaluador_victimas',
+        executable='juntar_victimas',
+        name='juntar_victimas',
+        output='screen',
+        parameters=[
+            {'use_sim_time': True}
+        ],
+    )
+
     # medir_odometria = Node(
     #     package='evaluador_victimas',
     #     executable='medir_odometria',
@@ -181,9 +201,9 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        declarar_gamma,
-        declarar_particulas,
         declarar_sigma,
+        declarar_particulas,
+        declarar_gamma,
         declarar_escala_avance,
         declarar_escala_giro,
         declarar_umbral,
@@ -194,5 +214,6 @@ def generate_launch_description():
         detector,
         detector_scan,
         detector_obstaculos,
+        juntar_victimas,
         rviz,
     ])
